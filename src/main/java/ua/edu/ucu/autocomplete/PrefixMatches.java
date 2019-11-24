@@ -55,7 +55,10 @@ public class PrefixMatches {
     // - при k=3 повертається 'abc', 'abcd', 'abce', 'abcde'
     // - при k=4 повертається 'abc', 'abcd', 'abce', 'abcde', 'abcdef'
     public Iterable<String> wordsWithPrefix(String pref, int k) {
-        throw new UnsupportedOperationException("Not supported yet.");        
+        if(pref.length()>=2){
+            return trie.wordsWithPrefix(pref, k);
+        }
+        return null;
     }
 
     public int size() {

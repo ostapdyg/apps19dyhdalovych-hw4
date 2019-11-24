@@ -72,19 +72,34 @@ public class RWayTrie implements Trie {
 
     @Override
     public Iterable<String> wordsWithPrefix(String s) {
-        Node starting_node = getNode(s);
-        Queue q = new Queue();
-        addNodesToQueue(starting_node, s, q);
-        return q;
+        return wordsWithPrefix(s, -1);
     }
-    
-    private void addNodesToQueue(Node cur_node, String prefix, Queue q){
-        if (cur_node == null){return;}
-        if (cur_node.val != 0){q.enqueue(prefix);}
-        for (char c = 0; c < 26; c++){
-            addNodesToQueue(cur_node.children[c], prefix + getCharFromIndex(c), q);
-        }
+    private class NodeTuple{
+        public Node node;
+        public String word;
+		public NodeTuple(Node node, String word) {
+			this.node = node;
+			this.word = word;
+		}
+        
     }
+    // private void addNodesToQueue(Node cur_node, String prefix, Queue q){
+    //     if (cur_node == null){return;}
+    //     Queue nodes = new Queue();
+    //     nodes.enqueue(new NodeTuple(cur_node, prefix));
+    //     while(!(nodes.isEmpty())){
+    //         NodeTuple tup = (NodeTuple) nodes.dequue();
+    //         if(tup.node.val!=0){
+    //             q.enqueue(tup.word);
+    //         }
+    //         for (int i = 0; i < 26; i++) {
+    //             if(tup.node.children[i] != null){
+    //                 nodes.enqueue(new NodeTuple(tup.node.children[i], tup.word+getCharFromIndex(i)));
+    //             }
+    //         }
+    //     }
+    // }
+    @Override
     public Iterable<String> wordsWithPrefix(String s, int k) {
         Node starting_node = getNode(s);
         Queue q = new Queue();
@@ -94,10 +109,26 @@ public class RWayTrie implements Trie {
     
     private void addNodesToQueue(Node cur_node, String prefix, Queue q, int k){
         if (cur_node == null){return;}
-        if(k == 0){return;}
-        if (cur_node.val != 0){q.enqueue(prefix);}
-        for (char c = 0; c < 26; c++){
-            addNodesToQueue(cur_node.children[c], prefix + getCharFromIndex(c), q);
+        Queue nodes = new Queue();
+        nodes.enqueue(new NodeTuple(cur_node, prefix));
+        int s = 0;
+        while(!nodes.isEmpty()){
+            NodeTuple tup = (NodeTuple) nodes.dequue();
+            if(tup.node.val!=0){
+                if(tup.word.length()>s){
+                    k-=1;
+                    s = tup.word.length();
+                    if(k==-1){
+                        return;
+                    }
+                }
+                q.enqueue(tup.word);
+            }
+            for (int i = 0; i < 26; i++) {
+                if(tup.node.children[i] != null){
+                    nodes.enqueue(new NodeTuple(tup.node.children[i], tup.word+getCharFromIndex(i)));
+                }
+            }
         }
     }
     @Override
