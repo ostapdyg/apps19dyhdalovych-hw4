@@ -43,5 +43,28 @@ public class PrefixMatchesITTest {
 
         assertThat(result, containsInAnyOrder(expResult));
     }
+    @Test
+    public void testWordsWithPrefix_String_and_K_Dif_Sizes() {
+        String pref = "abc";
+        int k = 5;
+        pm.load("abcdefff", "abcdefffaa");
+        Iterable<String> result = pm.wordsWithPrefix(pref, k);
+
+        String[] expResult = {"abc", "abce", "abcd", "abcde", "abcdef", "abcdefff"};
+
+        assertThat(result, containsInAnyOrder(expResult));
+    }
+
+    @Test
+    public void testWordsWithPrefix_String_Two_Chars() {
+        String pref = "abc";
+        int k = 3;
+        pm.load("ab");
+        Iterable<String> result = pm.wordsWithPrefix(pref, k);
+
+        String[] expResult = {"abc", "abce", "abcd", "abcde"};
+
+        assertThat(result, containsInAnyOrder(expResult));
+    }
 
 }

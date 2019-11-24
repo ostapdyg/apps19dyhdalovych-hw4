@@ -20,9 +20,10 @@ public class PrefixMatches {
         int num = 0;
         for(String string : strings){
             for(String word:string.split("\\s+")){
+                if(word.length()>2){
                 trie.add(new Tuple(word.toLowerCase(), word.length()));
                 num += 1;
-            }
+            }}
         }
     return num;
     }
