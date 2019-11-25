@@ -5,10 +5,9 @@ import org.junit.Test;
 
 import ua.edu.ucu.tries.Tuple;
 
-
-public class TupleTest{
+public class TupleTest {
     @Test
-    public void testTuple(){
+    public void testTuple() {
         Tuple t = new Tuple("ABc", 10);
         assertEquals(t.term, "ABc");
         assertEquals(t.weight, 10);

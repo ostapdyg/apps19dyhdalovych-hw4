@@ -1,6 +1,7 @@
 package ua.edu.ucu.collections;
 
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 public class Queue implements Iterable<String> {
     ImmutableLinkedList list;
@@ -23,7 +24,7 @@ public class Queue implements Iterable<String> {
         return res;
     }
 
-    public boolean isEmpty(){
+    public boolean isEmpty() {
         return list.isEmpty();
     }
 
@@ -33,11 +34,13 @@ public class Queue implements Iterable<String> {
     }
 }
 
-class QueueIterator implements Iterator<String>{
+class QueueIterator implements Iterator<String> {
     private ImmutableLinkedList list;
-    public QueueIterator(Queue q){
+
+    public QueueIterator(Queue q) {
         this.list = q.list;
     }
+
     @Override
     public boolean hasNext() {
         return !(list.isEmpty());
@@ -45,7 +48,11 @@ class QueueIterator implements Iterator<String>{
 
     @Override
     public String next() {
+        if (list.isEmpty()) {
+            throw new NoSuchElementException();
+        }
         String res = (String) list.getFirst();
         this.list = this.list.removeFirst();
         return res;
-    }}
+    }
+}

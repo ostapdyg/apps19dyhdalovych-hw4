@@ -14,18 +14,23 @@ public class PrefixMatches {
     public PrefixMatches(Trie trie) {
         this.trie = trie;
     }
-    // Формує in-memory словник слів. Метод може приймати слово, рядок, масив слів/рядків. Якщо приходить рядок, то він має бути розділений на окремі слова (слова відокремлюються пробілами).
-    // До словника мають додаватися лише слова довщі за 2 символи. Передбачається, що у рядках які надходять знаки пунктуації відсутні.
+
+    // Формує in-memory словник слів. Метод може приймати слово, рядок, масив
+    // слів/рядків. Якщо приходить рядок, то він має бути розділений на окремі слова
+    // (слова відокремлюються пробілами).
+    // До словника мають додаватися лише слова довщі за 2 символи. Передбачається,
+    // що у рядках які надходять знаки пунктуації відсутні.
     public int load(String... strings) {
         int num = 0;
-        for(String string : strings){
-            for(String word:string.split("\\s+")){
-                if(word.length()>2){
-                trie.add(new Tuple(word.toLowerCase(), word.length()));
-                num += 1;
-            }}
+        for (String string : strings) {
+            for (String word : string.split("\\s+")) {
+                if (word.length() > 2) {
+                    trie.add(new Tuple(word.toLowerCase(), word.length()));
+                    num += 1;
+                }
+            }
         }
-    return num;
+        return num;
     }
 
     public boolean contains(String word) {
@@ -36,14 +41,19 @@ public class PrefixMatches {
         return trie.delete(word.toLowerCase());
 
     }
-    // Якщо pref довший або дорівнює 2ом символам, то повертається усі слова які починаються з даного префіксу.
+
+    // Якщо pref довший або дорівнює 2ом символам, то повертається усі слова які
+    // починаються з даного префіксу.
     public Iterable<String> wordsWithPrefix(String pref) {
-        if(pref.length()>=2){
+        if (pref.length() >= 2) {
             return trie.wordsWithPrefix(pref);
         }
         return null;
     }
-    // Якщо pref довший або дорівнює 2ом символам, то повертається набір слів k різних довжин (починаючи з довжини префіксу або 3 якщо префікс містить дві літери) і які починаються з даного префіксу pref.
+
+    // Якщо pref довший або дорівнює 2ом символам, то повертається набір слів k
+    // різних довжин (починаючи з довжини префіксу або 3 якщо префікс містить дві
+    // літери) і які починаються з даного префіксу pref.
     // Приклад: задані наступні слова та їх довжини:
     // abc 3
     // abcd 4
@@ -56,7 +66,7 @@ public class PrefixMatches {
     // - при k=3 повертається 'abc', 'abcd', 'abce', 'abcde'
     // - при k=4 повертається 'abc', 'abcd', 'abce', 'abcde', 'abcdef'
     public Iterable<String> wordsWithPrefix(String pref, int k) {
-        if(pref.length()>=2){
+        if (pref.length() >= 2) {
             return trie.wordsWithPrefix(pref, k);
         }
         return null;
