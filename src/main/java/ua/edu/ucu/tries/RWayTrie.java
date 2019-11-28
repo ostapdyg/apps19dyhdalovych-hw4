@@ -1,5 +1,8 @@
 package ua.edu.ucu.tries;
 
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+
 import ua.edu.ucu.collections.Queue;
 
 public class RWayTrie implements Trie {
@@ -8,6 +11,8 @@ public class RWayTrie implements Trie {
     private static class Node {
         private final Node[] children = new Node[26];
         private int val = 0;
+        private boolean end;
+        private String word;
 
     }
 
@@ -30,6 +35,8 @@ public class RWayTrie implements Trie {
         }
         if (index == t.term.length()) {
             cur_node.val = t.weight;
+            cur_node.end = true;
+            cur_node.word = t.term;
             return cur_node;
         }
         final int i = getCharIndex(t.term.charAt(index));
@@ -116,40 +123,67 @@ public class RWayTrie implements Trie {
     // }
     // }
     // }
-    @Override
-    public Iterable<String> wordsWithPrefix(final String s, final int k) {
-        final Node starting_node = getNode(s);
-        final Queue q = new Queue();
-        addNodesToQueue(starting_node, s, q, k);
-        return q;
-    }
 
-    private void addNodesToQueue(final Node cur_node, final String prefix, final Queue q, int k) {
-        if (cur_node == null) {
-            return;
+    private static class RWayTrieIterator implements Iterator<String> {
+        private int num_lengths = 0;
+        private String word_to_return;
+        private Queue nodes_to_visit;
+        private int prev_l = 0;
+
+        public RWayTrieIterator(Node current_node, int k) {
+            this.num_lengths = k+1;
+            this.nodes_to_visit = new Queue();
+            this.nodes_to_visit.enqueue(current_node);
+            word_to_return = changeWordToReturn();
         }
-        final Queue nodes = new Queue();
-        nodes.enqueue(new NodeTuple(cur_node, prefix));
-        int s = 0;
-        while (!nodes.isEmpty()) {
-            final NodeTuple tup = (NodeTuple) nodes.dequue();
-            if (tup.node.val != 0) {
-                if (tup.word.length() > s) {
-                    k -= 1;
-                    s = tup.word.length();
-                    if (k == -1) {
-                        return;
+
+        @Override
+        public boolean hasNext() {
+            return !(word_to_return==null);
+        }
+
+        @Override
+        public String next() {
+            if (word_to_return == null) {
+                throw new NoSuchElementException();
+            }
+            String res = word_to_return;
+            word_to_return = changeWordToReturn();
+            return res;
+        }
+
+        private String changeWordToReturn() {
+            while (!nodes_to_visit.isEmpty()) {
+                Node cur_node = (Node) nodes_to_visit.dequeue();
+                for (Node next_node : cur_node.children) {
+                    if (!(next_node == null)) {
+                        nodes_to_visit.enqueue(next_node);
                     }
                 }
-                q.enqueue(tup.word);
-            }
-            for (int i = 0; i < 26; i++) {
-                if (tup.node.children[i] != null) {
-                    nodes.enqueue(new NodeTuple(tup.node.children[i], tup.word + getCharFromIndex(i)));
+                if (cur_node.end) {
+                    if (cur_node.word.length() > prev_l) {
+                        prev_l = cur_node.word.length();
+                        num_lengths -= 1;
+                        if (num_lengths == 0) {
+                            return null;
+                        }
+                    }
+                    return cur_node.word;
                 }
             }
+            return null;
         }
     }
+
+    @Override
+    public Iterable<String> wordsWithPrefix(final String s, final int k) {
+        return new Iterable<String>() {
+            @Override
+            public Iterator<String> iterator() {
+                return new RWayTrieIterator(getNode(s), k);
+                };
+            };
+        }
 
     @Override
     public int size() {
